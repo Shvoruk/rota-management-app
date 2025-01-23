@@ -1,9 +1,13 @@
-package dev.oleksii.rotamanagementapp.security.user;
+package dev.oleksii.rotamanagementapp.domain.entities;
 
+import dev.oleksii.rotamanagementapp.domain.enums.Role;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,19 +25,31 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class User implements UserDetails {
 
     @Id
-    @GeneratedValue
-    private Integer id;
-//    @Column(nullable = false)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
+    @Column(nullable = false)
     private String firstname;
-//    @Column(nullable = false)
+
+    @Column(nullable = false)
     private String lastname;
-//    @Column(nullable = false)
+
+    @Column(nullable = false)
     private String password;
-//    @Column(unique = true, nullable = false)
+
+    @Column(unique = true, nullable = false)
     private String email;
-//    @Column(nullable = false)
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Column(nullable = false)
+    private boolean verified;
+
+    private String verificationToken;
+
+    private LocalDateTime verificationTokenExpirationDate;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -67,7 +83,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return this.verified;
     }
 
 
