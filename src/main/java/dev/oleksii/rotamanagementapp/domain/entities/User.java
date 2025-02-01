@@ -56,14 +56,13 @@ public class User implements UserDetails {
 
     private LocalDateTime creationDate;
 
-    public void addMembership(TeamMember teamMember) {
-        teamMemberships.add(teamMember);
-//        teamMember.setUser(this);
+    public void addMembership(TeamMember membership) {
+        teamMemberships.add(membership);
+        membership.setUser(this);
     }
 
     public void removeMembership(TeamMember teamMember) {
         teamMemberships.remove(teamMember);
-//        teamMember.setUser(null);
     }
 
     @Override
