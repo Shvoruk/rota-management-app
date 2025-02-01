@@ -32,6 +32,13 @@ logging:
     org:
       springframework:
         mail: DEBUG
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
+
 
 jwt:
   expiration-milliseconds: 86400000  # 24 hours
