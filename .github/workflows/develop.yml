@@ -13,6 +13,8 @@ jobs:
         java-version: '23'
         distribution: 'temurin'
         cache: maven
+    - name: Purge Old Dependencies
+      run: mvn dependency:purge-local-repository
     - name: Build & Run Unit Tests
       run: mvn clean compile test
     - name: Docker Build / Compose
