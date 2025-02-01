@@ -33,19 +33,17 @@ public class UserDetailsServiceImpl implements UserService, UserDetailsService {
 
     @Transactional
     @Override
-    public SuccessResponse deleteUserByEmail(String email) {
+    public void deleteUserByEmail(String email) {
 
         var user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User with email " + email + " not found."));
+
         userRepository.delete(user);
 
-        return SuccessResponse.builder()
-                .response("User deleted successfully")
-                .build();
     }
 
     @Transactional
     @Override
-    public SuccessResponse updateUserDetailsByEmail(String email, UserUpdateRequest request) {
+    public void updateUserDetailsByEmail(String email, UserUpdateRequest request) {
 
         var user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found"));
 
@@ -72,9 +70,6 @@ public class UserDetailsServiceImpl implements UserService, UserDetailsService {
 
         userRepository.save(user);
 
-        return SuccessResponse.builder()
-                .response("User updated successfully")
-                .build();
     }
 
     @Transactional

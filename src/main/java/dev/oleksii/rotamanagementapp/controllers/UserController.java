@@ -22,11 +22,13 @@ public class UserController {
 
     @PutMapping("/me")
     public ResponseEntity<SuccessResponse> updateAccount(@Valid @RequestBody UserUpdateRequest request, Principal principal) {
-        return ResponseEntity.ok(userService.updateUserDetailsByEmail(principal.getName(), request));
+        userService.updateUserDetailsByEmail(principal.getName(), request);
+        return ResponseEntity.ok(new SuccessResponse("User updated successfully"));
     }
 
     @DeleteMapping("/me")
     public ResponseEntity<SuccessResponse> deleteAccount(Principal principal) {
-        return ResponseEntity.ok(userService.deleteUserByEmail(principal.getName()));
+        userService.deleteUserByEmail(principal.getName());
+        return ResponseEntity.ok(new SuccessResponse("User deleted successfully"));
     }
 }
