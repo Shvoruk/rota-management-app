@@ -18,8 +18,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: aleksey.shvoruk@gmail.com
-    password: tlqiwqrkkcjrhtfm
+    username: ${MAIL_USER}
+    password: ${MAIL_PASSWORD}
     properties:
       mail:
         smtp:
@@ -32,3 +32,12 @@ logging:
     org:
       springframework:
         mail: DEBUG
+
+jwt:
+  expiration-milliseconds: 86400000  # 24 hours
+  secret: ${JWT_SECRET}
+
+verification:
+  token:
+    token-expiration-minutes: 30
+    verification-link: ${VERIFICATION_LINK}
