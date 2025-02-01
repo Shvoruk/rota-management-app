@@ -1,5 +1,6 @@
 package dev.oleksii.rotamanagementapp.security;
 
+import dev.oleksii.rotamanagementapp.configuration.JwtConfig;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -17,7 +18,12 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    private static final String SECRET_KEY = "D69B2BFBC54A31515527A49291AF9D69B2BFBC54A31515527A49291AF9";
+    private final JwtConfig jwtConfig;
+
+
+    public JwtService(JwtConfig jwtConfig) {
+        this.jwtConfig = jwtConfig;
+    }
 
     String getUsername(String token) {
         return getClaim(token, Claims::getSubject);
@@ -39,7 +45,7 @@ public class JwtService {
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 *24))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtConfig.getExpirationMilliseconds()))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -66,7 +72,7 @@ public class JwtService {
     }
 
     private Key getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        byte[] keyBytes = Decoders.BASE64.decode(jwtConfig.getSecret());
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }

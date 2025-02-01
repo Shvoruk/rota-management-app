@@ -1,7 +1,6 @@
 package dev.oleksii.rotamanagementapp.domain.dtos;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -13,22 +12,18 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterRequest {
+public class UserUpdateRequest {
 
-    @NotBlank(message = "Full name is required.")
-    private String fullName;
 
-    @NotBlank(message = "Email is required.")
+    private String newFullName;
+
     @Email(message = "Email format is invalid.")
-    private String email;
+    private String newEmail;
 
-    @NotBlank(message = "Password is required.")
     @Size(min = 8, message = "Password must be at least 8 characters long.")
     @Pattern(
             regexp = "^(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$",
             message = "Password must contain at least one digit, one uppercase letter, one lowercase letter, one special character, and no whitespace."
     )
-    private String password;
+    private String newPassword;
 }
-
-

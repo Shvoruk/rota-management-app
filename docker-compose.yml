@@ -16,6 +16,8 @@ services:
     container_name: rota-management-app
     environment:
       - SPRING_PROFILES_ACTIVE=dev
+    env_file:
+      - .env
     depends_on:
       - db
     ports:

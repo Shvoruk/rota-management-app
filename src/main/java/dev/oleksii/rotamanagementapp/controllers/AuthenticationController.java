@@ -3,8 +3,9 @@ package dev.oleksii.rotamanagementapp.controllers;
 import dev.oleksii.rotamanagementapp.domain.dtos.AuthenticationRequest;
 import dev.oleksii.rotamanagementapp.domain.dtos.AuthenticationResponse;
 import dev.oleksii.rotamanagementapp.domain.dtos.RegisterRequest;
-import dev.oleksii.rotamanagementapp.domain.dtos.RegisterResponse;
-import dev.oleksii.rotamanagementapp.services.impl.AuthenticationService;
+import dev.oleksii.rotamanagementapp.domain.dtos.SuccessResponse;
+import dev.oleksii.rotamanagementapp.services.AuthenticationService;
+import dev.oleksii.rotamanagementapp.services.EmailVerificationService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,17 +22,12 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest request){
+    public ResponseEntity<SuccessResponse> register(@Valid @RequestBody RegisterRequest request){
         return ResponseEntity.ok(authenticationService.register(request));
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody AuthenticationRequest request){
         return  ResponseEntity.ok(authenticationService.authenticate(request));
-    }
-
-    @GetMapping("/verify")
-    public ResponseEntity<AuthenticationResponse> verify(@RequestParam String token){
-        return  ResponseEntity.ok(authenticationService.verify(token));
     }
 }

@@ -29,10 +29,7 @@ public class User implements UserDetails {
     private UUID id;
 
     @Column(nullable = false)
-    private String firstname;
-
-    @Column(nullable = false)
-    private String lastname;
+    private String fullName;
 
     @Column(nullable = false)
     private String password;
@@ -44,12 +41,20 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<TeamMember> teamMemberships;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<UserShift> userShifts;
+
     @Column(nullable = false)
     private boolean verified;
 
     private String verificationToken;
 
     private LocalDateTime verificationTokenExpirationDate;
+
+    private LocalDateTime creationDate;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
