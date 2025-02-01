@@ -1,22 +1,27 @@
 name: CI (develop)
+
 on:
   push:
     branches: [ "develop" ]
+
 jobs:
   test-and-build:
+
     runs-on: ubuntu-latest
+
     steps:
     - uses: actions/checkout@v4
+
     - name: Set up JDK 23
       uses: actions/setup-java@v4
       with:
         java-version: '23'
         distribution: 'temurin'
         cache: maven
-    - name: Purge Old Dependencies
-      run: mvn dependency:purge-local-repository
+
     - name: Build & Run Unit Tests
-      run: mvn clean compile test
+      run: mvn clean  test
+
     - name: Docker Build / Compose
       run: |
         docker compose build
