@@ -24,21 +24,21 @@ public class Team {
     @Column(nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "team", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "team", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true,fetch = FetchType.EAGER)
     @Builder.Default
     private Set<TeamMember> members = new HashSet<>();
 
-    @OneToOne(mappedBy = "team", cascade = CascadeType.ALL, optional = false)
+    @OneToOne(mappedBy = "team", cascade = CascadeType.ALL)
     private Schedule schedule;
 
     public void addMember(TeamMember member) {
         members.add(member);
-//        member.setTeam(this);
+        member.setTeam(this);
     }
 
     public void removeMember(TeamMember member) {
         members.remove(member);
-//        member.setTeam(null);
+        member.setTeam(null);
     }
 
 
