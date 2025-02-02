@@ -2,7 +2,9 @@ name: CI (develop)
 
 on:
   push:
-    branches: [ "develop" ]
+    branches:
+      - develop
+      - Shvoruk-workflows
 
 jobs:
   test-and-build:
@@ -21,7 +23,7 @@ jobs:
           cache: maven
 
       - name: Build & Run Unit Tests
-        run: mvn clean verify
+        run: mvn clean verify -e -X
 
       - name: Docker Build & Run
         run: |

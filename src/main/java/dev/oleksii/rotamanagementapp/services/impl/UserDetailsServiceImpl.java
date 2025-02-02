@@ -2,7 +2,6 @@ package dev.oleksii.rotamanagementapp.services.impl;
 
 import dev.oleksii.rotamanagementapp.configuration.EmailVerificationConfig;
 import dev.oleksii.rotamanagementapp.domain.dtos.RegisterRequest;
-import dev.oleksii.rotamanagementapp.domain.dtos.SuccessResponse;
 import dev.oleksii.rotamanagementapp.domain.dtos.UserUpdateRequest;
 import dev.oleksii.rotamanagementapp.domain.entities.User;
 import dev.oleksii.rotamanagementapp.domain.enums.Role;
