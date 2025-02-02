@@ -1,7 +1,7 @@
 # Dockerfile
 
 # 1. Build Stage
-FROM eclipse-temurin:23-jdk-alpine AS builder
+FROM eclipse-temurin:21-alpine AS builder
 
 # Install Maven
 RUN apk add --no-cache maven
@@ -19,7 +19,7 @@ COPY src/ ./src/
 RUN mvn clean package -DskipTests
 
 # 2. Runtime Stage
-FROM eclipse-temurin:23-jdk-alpine
+FROM eclipse-temurin:21-jdk-alpine
 WORKDIR /app
 
 # Copy the JAR file from the builder stage
