@@ -15,9 +15,11 @@ services:
     build: .
     container_name: rota-management-app
     environment:
-      - SPRING_PROFILES_ACTIVE=dev
-    env_file:
-      - .env
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_MAIL_USERNAME: ${MAIL_USER}
+      SPRING_MAIL_PASSWORD: ${MAIL_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      VERIFICATION_LINK: ${VERIFICATION_LINK}
     depends_on:
       - db
     ports:
