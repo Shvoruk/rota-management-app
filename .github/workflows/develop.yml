@@ -33,7 +33,7 @@ jobs:
           MAIL_USER: ${{ secrets.MAIL_USER }}
           MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          VERIFICATION_LINK: ${{ VERIFICATION_LINK }}
+          VERIFICATION_LINK: ${{ vars.VERIFICATION_LINK }}
 
       - name: Verify Running Containers
         run: docker ps
