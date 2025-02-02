@@ -2,7 +2,9 @@ name: CI (develop)
 
 on:
   push:
-    branches: [ "develop" ]
+    branches:
+      - develop
+      - Shvoruk-workflows
 
 jobs:
   test-and-build:
