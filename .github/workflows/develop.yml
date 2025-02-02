@@ -28,6 +28,12 @@ jobs:
       - name: Docker Build & Run
         run: |
           docker compose up --build -d
+        env:
+          SPRING_PROFILES_ACTIVE: dev
+          MAIL_USER: ${{ secrets.MAIL_USER }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          VERIFICATION_LINK: ${{ VERIFICATION_LINK }}
 
       - name: Verify Running Containers
         run: docker ps
