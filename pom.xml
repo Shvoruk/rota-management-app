@@ -108,7 +108,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
-            <optional>true</optional>
         </dependency>
 
 
@@ -128,7 +127,6 @@
                         <path>
                             <groupId>org.springframework.boot</groupId>
                             <artifactId>spring-boot-configuration-processor</artifactId>
-                            <version>3.4.1</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
