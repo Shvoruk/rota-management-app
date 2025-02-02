@@ -1,12 +1,11 @@
 package dev.oleksii.rotamanagementapp;
 
-import dev.oleksii.rotamanagementapp.configuration.JwtConfig;
-import dev.oleksii.rotamanagementapp.configuration.EmailVerificationConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 @SpringBootApplication
-@EnableConfigurationProperties({ JwtConfig.class, EmailVerificationConfig.class })
+@ConfigurationPropertiesScan("dev.oleksii.rotamanagementapp.configuration")
 public class RotaManagementAppApplication {
 
 	public static void main(String[] args) {
