@@ -26,8 +26,6 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     private final EmailVerificationConfig emailVerificationConfig;
     private final EmailService emailService;
 
-
-
     @Override
     @Transactional
     public AuthenticationResponse verify(String token) {
