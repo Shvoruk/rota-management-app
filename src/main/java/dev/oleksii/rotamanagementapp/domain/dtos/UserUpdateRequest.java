@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserUpdateRequest {
 
-
+    @Size(min = 2, max = 50, message = "Name must be at least 2 characters long.")
     private String newFullName;
 
     @Email(message = "Email format is invalid.")
