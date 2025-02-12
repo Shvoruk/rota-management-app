@@ -17,7 +17,7 @@ public class EmailServiceImpl implements EmailService {
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
 
-    public void sendEmail(String to, String subject, String content) {
+    public void sendEmail(String to, String subject, String content){
 
         Context context = new Context();
         context.setVariable("link", content);
