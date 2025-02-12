@@ -20,13 +20,13 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PutMapping("/me")
+    @PutMapping
     public ResponseEntity<SuccessResponse> updateAccount(@Valid @RequestBody UserUpdateRequest request, Principal principal) {
         userService.updateUserDetailsByEmail(principal.getName(), request);
         return ResponseEntity.ok(new SuccessResponse("User updated successfully"));
     }
 
-    @DeleteMapping("/me")
+    @DeleteMapping
     public ResponseEntity<SuccessResponse> deleteAccount(Principal principal) {
         userService.deleteUserByEmail(principal.getName());
         return ResponseEntity.ok(new SuccessResponse("User deleted successfully"));
