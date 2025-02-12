@@ -1,5 +1,7 @@
 package dev.oleksii.rotamanagementapp.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import dev.oleksii.rotamanagementapp.domain.enums.Role;
 import jakarta.persistence.*;
 
@@ -21,6 +23,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "users")
 public class User implements UserDetails {
 
@@ -41,11 +44,9 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<TeamMember> teamMemberships;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<UserShift> userShifts;
 
     @Column(nullable = false)
     private boolean verified;
@@ -55,15 +56,6 @@ public class User implements UserDetails {
     private LocalDateTime verificationTokenExpirationDate;
 
     private LocalDateTime creationDate;
-
-    public void addMembership(TeamMember membership) {
-        teamMemberships.add(membership);
-        membership.setUser(this);
-    }
-
-    public void removeMembership(TeamMember teamMember) {
-        teamMemberships.remove(teamMember);
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
