@@ -1,6 +1,6 @@
 package dev.oleksii.rotamanagementapp.services.impl;
 
-import dev.oleksii.rotamanagementapp.configuration.EmailVerificationConfig;
+import dev.oleksii.rotamanagementapp.configuration.VerificationConfig;
 import dev.oleksii.rotamanagementapp.domain.dtos.RegisterRequest;
 import dev.oleksii.rotamanagementapp.domain.dtos.UserUpdateRequest;
 import dev.oleksii.rotamanagementapp.domain.entities.User;
@@ -12,7 +12,6 @@ import dev.oleksii.rotamanagementapp.services.UserService;
 import dev.oleksii.rotamanagementapp.services.EmailVerificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,11 +21,11 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class UserDetailsServiceImpl implements UserService, UserDetailsService {
+public class UserDetailsServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final EmailVerificationConfig emailVerificationConfig;
+    private final VerificationConfig verificationConfig;
     private final EmailVerificationService emailVerificationService;
 
 
@@ -82,7 +81,7 @@ public class UserDetailsServiceImpl implements UserService, UserDetailsService {
                 .role(Role.USER)
                 .verified(false)
                 .verificationToken(emailVerificationService.generateVerificationToken())
-                .verificationTokenExpirationDate(LocalDateTime.now().plusMinutes(emailVerificationConfig.getTokenExpirationMinutes()))
+                .verificationTokenExpirationDate(LocalDateTime.now().plusMinutes(verificationConfig.getTokenExpirationMinutes()))
                 .creationDate(LocalDateTime.now())
                 .build();
 

@@ -1,6 +1,6 @@
 package dev.oleksii.rotamanagementapp.services.impl;
 
-import dev.oleksii.rotamanagementapp.configuration.EmailVerificationConfig;
+import dev.oleksii.rotamanagementapp.configuration.VerificationConfig;
 import dev.oleksii.rotamanagementapp.domain.dtos.AuthenticationResponse;
 import dev.oleksii.rotamanagementapp.domain.entities.User;
 import dev.oleksii.rotamanagementapp.domain.repos.UserRepository;
@@ -19,11 +19,11 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class EmailVerificationServiceImpl implements EmailVerificationService {
+public class VerificationServiceImpl implements EmailVerificationService {
 
     private final UserRepository userRepository;
     private final JwtService jwtService;
-    private final EmailVerificationConfig emailVerificationConfig;
+    private final VerificationConfig verificationConfig;
     private final EmailService emailService;
 
     @Override
@@ -59,7 +59,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
 
         String newToken = generateVerificationToken();
         user.setVerificationToken(newToken);
-        user.setVerificationTokenExpirationDate(LocalDateTime.now().plusMinutes(emailVerificationConfig.getTokenExpirationMinutes()));
+        user.setVerificationTokenExpirationDate(LocalDateTime.now().plusMinutes(verificationConfig.getTokenExpirationMinutes()));
 
         userRepository.save(user);
 
@@ -67,7 +67,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     }
 
     public void sendVerificationEmail(User user) {
-        String link = emailVerificationConfig.getVerificationLink() + user.getVerificationToken();
+        String link = verificationConfig.getVerificationLink() + user.getVerificationToken();
         emailService.sendEmail(user.getEmail(), "Verify your email", link);
     }
 

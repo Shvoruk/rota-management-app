@@ -30,4 +30,5 @@ public class VerificationController {
         emailVerificationService.resendVerification(email);
         return ResponseEntity.ok(new SuccessResponse("Please check your email"));
     }
+
 }

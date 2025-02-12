@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Getter
 @Setter
 @ConfigurationProperties(prefix = "verification.token")
-public class EmailVerificationConfig {
+public class VerificationConfig {
 
     private int tokenExpirationMinutes;
     private String verificationLink;
