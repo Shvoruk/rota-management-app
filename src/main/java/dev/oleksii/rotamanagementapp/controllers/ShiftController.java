@@ -17,20 +17,14 @@ public class ShiftController {
 
     private final ShiftService shiftService;
 
+    @GetMapping("/{shiftId}")
+    public ResponseEntity<ShiftDto> getShift(@PathVariable UUID shiftId) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(shiftService.getShift(shiftId));
+    }
+
     @PostMapping
     public ResponseEntity<ShiftDto> createShift(@Valid @RequestBody CreateShiftRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(shiftService.createShift(request));
-    }
-
-    @PostMapping("/assign")
-    public ResponseEntity<ShiftDto> assignShift(@Valid @RequestBody AssignShiftRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(shiftService.assignShift(request));
-    }
-
-    @DeleteMapping("/unassign/{memberShiftId}")
-    public ResponseEntity<Void> unassignShift(@PathVariable UUID memberShiftId) {
-        shiftService.unassignShift(memberShiftId);
-        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{shiftId}")

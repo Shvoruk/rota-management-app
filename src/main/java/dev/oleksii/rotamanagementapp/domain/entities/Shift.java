@@ -43,5 +43,14 @@ public class Shift {
     @OneToMany(mappedBy = "shift", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<MemberShift> memberShifts;
 
+    public void addMemberShift(MemberShift memberShift) {
+        memberShifts.add(memberShift);
+        memberShift.setShift(this);
+    }
+
+    public void removeMemberShift(MemberShift memberShift) {
+        memberShifts.remove(memberShift);
+    }
+
 }
 
