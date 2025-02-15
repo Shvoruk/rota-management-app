@@ -1,34 +1,27 @@
 package dev.oleksii.rotamanagementapp.controllers;
 
-
 import dev.oleksii.rotamanagementapp.domain.dtos.AuthenticationResponse;
-
-import dev.oleksii.rotamanagementapp.domain.dtos.SuccessResponse;
-import dev.oleksii.rotamanagementapp.services.EmailVerificationService;
+import dev.oleksii.rotamanagementapp.services.VerificationService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
-
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequiredArgsConstructor
+@RequestMapping("/api/v1/auth/verify")
 public class VerificationController {
 
-    private final EmailVerificationService emailVerificationService;
+    private final VerificationService verificationService;
 
-    public VerificationController(EmailVerificationService emailVerificationService) {
-        this.emailVerificationService = emailVerificationService;
+    @GetMapping("/{verificationToken}")
+    public ResponseEntity<AuthenticationResponse> verify(@PathVariable String verificationToken) {
+        return ResponseEntity.ok(verificationService.verify(verificationToken));
     }
 
-    @GetMapping("/verify")
-    public ResponseEntity<AuthenticationResponse> verify(@RequestParam String token) {
-        return ResponseEntity.ok(emailVerificationService.verify(token));
-    }
-
-    @GetMapping("/resend-verification")
-    public ResponseEntity<SuccessResponse> resendVerificationToken(@RequestParam String email) {
-        emailVerificationService.resendVerification(email);
-        return ResponseEntity.ok(new SuccessResponse("Please check your email"));
+    @GetMapping("/resend/{email}")
+    public ResponseEntity<String> resendVerificationToken(@PathVariable String email) {
+        verificationService.resendVerificationToken(email);
+        return ResponseEntity.ok("Please check your email");
     }
 
 }

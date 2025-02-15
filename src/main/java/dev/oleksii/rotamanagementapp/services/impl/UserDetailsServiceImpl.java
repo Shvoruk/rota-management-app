@@ -1,15 +1,12 @@
 package dev.oleksii.rotamanagementapp.services.impl;
 
-import dev.oleksii.rotamanagementapp.configuration.VerificationConfig;
-import dev.oleksii.rotamanagementapp.domain.dtos.RegisterRequest;
-import dev.oleksii.rotamanagementapp.domain.dtos.UserUpdateRequest;
+import dev.oleksii.rotamanagementapp.domain.dtos.UserDto;
 import dev.oleksii.rotamanagementapp.domain.entities.User;
 import dev.oleksii.rotamanagementapp.domain.enums.Role;
 import dev.oleksii.rotamanagementapp.domain.repos.UserRepository;
 import dev.oleksii.rotamanagementapp.exceptions.EmailAlreadyInUseException;
-import dev.oleksii.rotamanagementapp.exceptions.UserNotFoundException;
 import dev.oleksii.rotamanagementapp.services.UserService;
-import dev.oleksii.rotamanagementapp.services.EmailVerificationService;
+import dev.oleksii.rotamanagementapp.services.VerificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -25,45 +22,39 @@ public class UserDetailsServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final VerificationConfig verificationConfig;
-    private final EmailVerificationService emailVerificationService;
+    private final VerificationService verificationService;
 
 
     @Transactional
     @Override
-    public void deleteUserByEmail(String email) {
-
-        var user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User with email " + email + " not found."));
-
+    public void deleteUser(User user) {
         userRepository.delete(user);
 
     }
 
     @Transactional
     @Override
-    public void updateUserDetailsByEmail(String email, UserUpdateRequest request) {
+    public void updateUserDetails(User user, UserDto request) {
 
-        var user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found"));
-
-        if (request.getNewFullName() != null && !request.getNewFullName().isEmpty()) {
-            user.setFullName(request.getNewFullName());
+        if (request.getFullName() != null && !request.getFullName().isEmpty()) {
+            user.setFullName(request.getFullName());
         }
 
-        if (request.getNewEmail() != null && !request.getNewEmail().isEmpty()) {
+        if (request.getEmail() != null && !request.getEmail().isEmpty()) {
 
-            if (userRepository.existsByEmail(request.getNewEmail()))
+            if (userRepository.existsByEmail(request.getEmail()))
                 throw new EmailAlreadyInUseException("Email is already in use");
 
-            user.setEmail(request.getNewEmail());
+            user.setEmail(request.getEmail());
             user.setVerified(false);
-            emailVerificationService.resendVerification(request.getNewEmail());
+            verificationService.resendVerificationToken(request.getEmail());
         }
 
-        if (request.getNewPassword() != null && !request.getNewPassword().isEmpty()) {
+        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
 
-            if (passwordEncoder.matches(request.getNewPassword(), user.getPassword()))
+            if (passwordEncoder.matches(request.getPassword(), user.getPassword()))
                 throw new IllegalArgumentException("New password is same as previous password");
-            user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
         }
 
         userRepository.save(user);
@@ -72,20 +63,18 @@ public class UserDetailsServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public User createUser(RegisterRequest request) {
-
+    public User createUser(UserDto request) {
         var user = User.builder()
                 .fullName(request.getFullName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
                 .verified(false)
-                .verificationToken(emailVerificationService.generateVerificationToken())
-                .verificationTokenExpirationDate(LocalDateTime.now().plusMinutes(verificationConfig.getTokenExpirationMinutes()))
-                .creationDate(LocalDateTime.now())
+                .createdAt(LocalDateTime.now())
                 .build();
-
-        return userRepository.save(user);
+        userRepository.save(user);
+        verificationService.createVerificationToken(user);
+        return user;
     }
 
     @Override
