@@ -9,8 +9,5 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface MembershipService {
-    void createMembership(User user, Team team, TeamRole role);
-    void deleteMembership(User user, UUID teamId);
-    Member findMembership(User user, UUID teamId);
     Set<Member> getAllMemberships(User user);
 }

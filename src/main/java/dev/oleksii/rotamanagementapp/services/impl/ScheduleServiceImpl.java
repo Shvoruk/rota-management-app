@@ -20,8 +20,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public void createSchedule(Team team) {
-        var schedule = Schedule.builder().team(team).build();
-        scheduleRepository.save(schedule);
+
     }
 
     @Override

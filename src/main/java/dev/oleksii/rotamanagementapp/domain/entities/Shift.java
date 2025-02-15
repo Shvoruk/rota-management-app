@@ -50,6 +50,7 @@ public class Shift {
 
     public void removeMemberShift(MemberShift memberShift) {
         memberShifts.remove(memberShift);
+        memberShift.setShift(null);
     }
 
 }
