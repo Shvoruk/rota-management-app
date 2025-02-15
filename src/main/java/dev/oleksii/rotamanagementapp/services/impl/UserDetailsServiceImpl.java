@@ -29,7 +29,6 @@ public class UserDetailsServiceImpl implements UserService {
     @Override
     public void deleteUser(User user) {
         userRepository.delete(user);
-
     }
 
     @Transactional

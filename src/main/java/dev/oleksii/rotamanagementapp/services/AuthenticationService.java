@@ -5,8 +5,6 @@ import dev.oleksii.rotamanagementapp.domain.dtos.AuthenticationResponse;
 import dev.oleksii.rotamanagementapp.domain.dtos.UserDto;
 
 public interface AuthenticationService {
-
     void register(UserDto request);
     AuthenticationResponse authenticate(AuthenticationRequest request);
-
 }
