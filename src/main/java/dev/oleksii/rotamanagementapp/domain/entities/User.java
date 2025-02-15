@@ -44,18 +44,15 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
+
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<TeamMember> teamMemberships;
+    private List<Member> memberships;
 
     @Column(nullable = false)
     private boolean verified;
-
-    private String verificationToken;
-
-    private LocalDateTime verificationTokenExpirationDate;
-
-    private LocalDateTime creationDate;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -91,6 +88,5 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return this.verified;
     }
-
 
 }

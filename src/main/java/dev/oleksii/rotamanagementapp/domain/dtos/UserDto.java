@@ -13,9 +13,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterRequest {
+public class UserDto {
 
     @NotBlank(message = "Full name is required.")
+    @Size(min = 2, max = 50, message = "Name must be at least 2 characters long.")
     private String fullName;
 
     @NotBlank(message = "Email is required.")
@@ -29,6 +30,7 @@ public class RegisterRequest {
             message = "Password must contain at least one digit, one uppercase letter, one lowercase letter, one special character, and no whitespace."
     )
     private String password;
+
 }
 
 
