@@ -1,34 +1,35 @@
 package dev.oleksii.rotamanagementapp.controllers;
 
-import dev.oleksii.rotamanagementapp.domain.dtos.SuccessResponse;
-import dev.oleksii.rotamanagementapp.domain.dtos.UserUpdateRequest;
+import dev.oleksii.rotamanagementapp.domain.dtos.UserDto;
+import dev.oleksii.rotamanagementapp.services.AuthorizationService;
 import dev.oleksii.rotamanagementapp.services.UserService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
 public class UserController {
 
     private final UserService userService;
-
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+    private final AuthorizationService authorizationService;
 
     @PutMapping
-    public ResponseEntity<SuccessResponse> updateAccount(@Valid @RequestBody UserUpdateRequest request, Principal principal) {
-        userService.updateUserDetailsByEmail(principal.getName(), request);
-        return ResponseEntity.ok(new SuccessResponse("User updated successfully"));
+    public ResponseEntity<Void> updateAccount(@Valid @RequestBody UserDto request, Principal principal) {
+        var user = authorizationService.getCurrentUser(principal);
+        userService.updateUserDetails(user, request);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping
-    public ResponseEntity<SuccessResponse> deleteAccount(Principal principal) {
-        userService.deleteUserByEmail(principal.getName());
-        return ResponseEntity.ok(new SuccessResponse("User deleted successfully"));
+    public ResponseEntity<Void> deleteAccount(Principal principal) {
+        var user = authorizationService.getCurrentUser(principal);
+        userService.deleteUser(user);
+        return ResponseEntity.noContent().build();
     }
+
 }
