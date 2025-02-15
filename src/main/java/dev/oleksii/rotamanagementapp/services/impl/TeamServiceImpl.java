@@ -3,6 +3,7 @@ package dev.oleksii.rotamanagementapp.services.impl;
 import dev.oleksii.rotamanagementapp.domain.dtos.CreateTeamRequest;
 import dev.oleksii.rotamanagementapp.domain.dtos.MemberDto;
 import dev.oleksii.rotamanagementapp.domain.dtos.TeamDto;
+import dev.oleksii.rotamanagementapp.domain.entities.Schedule;
 import dev.oleksii.rotamanagementapp.domain.entities.Team;
 import dev.oleksii.rotamanagementapp.domain.entities.Member;
 import dev.oleksii.rotamanagementapp.domain.entities.User;
@@ -11,7 +12,6 @@ import dev.oleksii.rotamanagementapp.domain.repos.TeamRepository;
 import dev.oleksii.rotamanagementapp.exceptions.TeamNotFoundException;
 import dev.oleksii.rotamanagementapp.mappers.TeamMapper;
 import dev.oleksii.rotamanagementapp.mappers.MemberMapper;
-import dev.oleksii.rotamanagementapp.services.ScheduleService;
 import dev.oleksii.rotamanagementapp.services.MembershipService;
 import dev.oleksii.rotamanagementapp.services.TeamService;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,6 @@ public class TeamServiceImpl implements TeamService {
 
     private final TeamRepository teamRepository;
     private final MembershipService membershipService;
-    private final ScheduleService scheduleService;
     private final TeamMapper teamMapper;
     private final MemberMapper memberMapper;
 
@@ -43,9 +42,19 @@ public class TeamServiceImpl implements TeamService {
         var team = Team.builder()
                 .name(request.getName())
                 .build();
+        var schedule = Schedule.builder()
+                .team(team)
+                .build();
+        var member = Member.builder()
+                .fullName(user.getFullName())
+                .user(user)
+                .team(team)
+                .role(TeamRole.MANAGER)
+                .build();
+
+        team.setSchedule(schedule);
+        team.addMember(member);
         teamRepository.save(team);
-        membershipService.createMembership(user, team, TeamRole.MANAGER);
-        scheduleService.createSchedule(team);
         return teamMapper.toTeamDTO(team);
     }
 
@@ -59,14 +68,32 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public TeamDto joinTeam(User user, UUID teamId) {
         var team = findTeamById(teamId);
-        membershipService.createMembership(user, team, TeamRole.EMPLOYEE);
+        if(team.getMembers().stream().anyMatch(member -> member.getUser().equals(user))) {
+            throw new IllegalArgumentException("User is already a member of this team");
+        }
+        var member = Member.builder()
+                .fullName(user.getFullName())
+                .user(user)
+                .team(team)
+                .role(TeamRole.EMPLOYEE)
+                .build();
+
+        team.addMember(member);
+        teamRepository.save(team);
         return teamMapper.toTeamDTO(team);
     }
 
     @Transactional
     @Override
     public void leaveTeam(User user, UUID teamId) {
-        membershipService.deleteMembership(user, teamId);
+        var team = findTeamById(teamId);
+        var member = team.getMembers().stream()
+                .filter(m -> m.getUser().equals(user))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("User is not a member of this team"));
+
+        team.removeMember(member);
+        teamRepository.save(team);
     }
 
     @Transactional(readOnly = true)
@@ -89,6 +116,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Transactional(readOnly = true)
+
     @Override
     public Set<MemberDto> getAllTeamMembers(UUID teamId) {
         var team = findTeamById(teamId);

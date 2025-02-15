@@ -35,4 +35,13 @@ public class Team {
     @JsonManagedReference
     private Schedule schedule;
 
+    public void addMember(Member member) {
+        members.add(member);
+        member.setTeam(this);
+    }
+
+    public void removeMember(Member member) {
+        members.remove(member);
+        member.setTeam(null);
+    }
 }

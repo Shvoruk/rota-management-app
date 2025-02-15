@@ -10,10 +10,10 @@ import java.util.UUID;
 
 public interface TeamService {
     TeamDto createTeam(User user, CreateTeamRequest request);
+    TeamDto getTeam(UUID teamId);
     void deleteTeam(UUID teamId);
     Set<TeamDto> getAllTeams(User user);
     Set<MemberDto> getAllTeamMembers(UUID teamId);
-    TeamDto getTeam(UUID teamId);
     TeamDto joinTeam(User user, UUID teamId);
     void leaveTeam(User user, UUID teamId);
 
