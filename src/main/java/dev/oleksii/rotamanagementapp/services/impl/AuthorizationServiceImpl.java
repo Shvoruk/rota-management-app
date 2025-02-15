@@ -19,49 +19,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AuthorizationServiceImpl implements AuthorizationService {
 
-    private final MembershipService membershipService;
     private final UserRepository userRepository;
-    private final ScheduleRepository scheduleRepository;
-    private final ShiftRepository shiftRepository;
 
     @Override
     public User getCurrentUser(Principal principal) {
         return userRepository.findByEmail(principal.getName())
                 .orElseThrow(() -> new UserNotFoundException("User with email: " + principal.getName() + " not found"));
-    }
-    /**
-     * Ensures the user is a member of the team.
-     * Throws an exception if the user is not a member.
-     */
-
-    public void checkMembership(User user, UUID teamId) {
-        membershipService.findMembership(user, teamId);
-    }
-    /**
-     * Ensures the user is a manager of the team.
-     * Throws an AccessDeniedException if the user is not a manager.
-     */
-
-    public void checkManagerByTeamId(User user, UUID teamId) {
-        var membership = membershipService.findMembership(user, teamId);
-        if (!membership.getRole().equals(TeamRole.MANAGER)) {
-            throw new AccessDeniedException("Only a team manager can perform this action.");
-        }
-    }
-
-    public void checkManagerByShiftId(User user, UUID shiftId) {
-        UUID teamId = shiftRepository.findTeamIdByShiftId(shiftId);
-        var membership = membershipService.findMembership(user, teamId);
-        if (!membership.getRole().equals(TeamRole.MANAGER)) {
-            throw new AccessDeniedException("Only a team manager can perform this action.");
-        }
-    }
-
-    public void checkManagerByScheduleId(User user, UUID scheduleId) {
-        UUID teamId = scheduleRepository.findTeamIdByScheduleId(scheduleId);
-        var membership = membershipService.findMembership(user, teamId);
-        if (!membership.getRole().equals(TeamRole.MANAGER)) {
-            throw new AccessDeniedException("Only a team manager can perform this action.");
-        }
     }
 }
