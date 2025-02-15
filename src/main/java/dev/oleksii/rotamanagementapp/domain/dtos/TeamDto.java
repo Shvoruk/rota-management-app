@@ -5,11 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SuccessResponse {
+public class TeamDto {
 
-    private String response;
+    private UUID teamId;
+
+    private String name;
+
 }

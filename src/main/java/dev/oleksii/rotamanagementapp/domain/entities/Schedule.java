@@ -1,5 +1,7 @@
 package dev.oleksii.rotamanagementapp.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,13 +23,14 @@ public class Schedule {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    // One-to-One: Schedule ↔ Team
     @OneToOne
-    @JoinColumn(name = "team_id", nullable = false, unique = true)
+    @JsonBackReference
+    @JoinColumn(nullable = false, unique = true)
     private Team team;
 
-    // One-to-Many: Schedule ↔ Shift
+    @JsonManagedReference
     @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Shift> shifts;
+
 }
 

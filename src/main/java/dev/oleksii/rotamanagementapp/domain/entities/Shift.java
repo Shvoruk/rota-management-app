@@ -1,8 +1,11 @@
 package dev.oleksii.rotamanagementapp.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
@@ -20,7 +23,10 @@ public class Shift {
     private UUID id;
 
     @Column(nullable = false)
-    private String name; // e.g., Morning, Afternoon, Night
+    private String name;
+
+    @Column(nullable = false)
+    private LocalDate date;
 
     @Column(nullable = false)
     private LocalTime startTime;
@@ -28,13 +34,14 @@ public class Shift {
     @Column(nullable = false)
     private LocalTime endTime;
 
-    // Many-to-One: Shift ↔ Schedule
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "schedule_id", nullable = false)
+    @JsonBackReference
+    @JoinColumn(nullable = false)
     private Schedule schedule;
 
-    // One-to-Many: Shift ↔ UserShift
+    @JsonManagedReference
     @OneToMany(mappedBy = "shift", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<UserShift> userShifts;
+    private List<MemberShift> memberShifts;
+
 }
 
