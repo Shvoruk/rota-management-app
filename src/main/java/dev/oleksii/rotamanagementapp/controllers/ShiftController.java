@@ -19,7 +19,7 @@ public class ShiftController {
 
     @GetMapping("/{shiftId}")
     public ResponseEntity<ShiftDto> getShift(@PathVariable UUID shiftId) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(shiftService.getShift(shiftId));
+        return ResponseEntity.ok(shiftService.getShift(shiftId));
     }
 
     @PostMapping
