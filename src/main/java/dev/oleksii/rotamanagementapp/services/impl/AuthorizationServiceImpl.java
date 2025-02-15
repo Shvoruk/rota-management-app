@@ -33,7 +33,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
      * Ensures the user is a member of the team.
      * Throws an exception if the user is not a member.
      */
-    @Override
+
     public void checkMembership(User user, UUID teamId) {
         membershipService.findMembership(user, teamId);
     }
@@ -41,7 +41,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
      * Ensures the user is a manager of the team.
      * Throws an AccessDeniedException if the user is not a manager.
      */
-    @Override
+
     public void checkManagerByTeamId(User user, UUID teamId) {
         var membership = membershipService.findMembership(user, teamId);
         if (!membership.getRole().equals(TeamRole.MANAGER)) {
@@ -49,7 +49,6 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         }
     }
 
-    @Override
     public void checkManagerByShiftId(User user, UUID shiftId) {
         UUID teamId = shiftRepository.findTeamIdByShiftId(shiftId);
         var membership = membershipService.findMembership(user, teamId);
@@ -58,7 +57,6 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         }
     }
 
-    @Override
     public void checkManagerByScheduleId(User user, UUID scheduleId) {
         UUID teamId = scheduleRepository.findTeamIdByScheduleId(scheduleId);
         var membership = membershipService.findMembership(user, teamId);
