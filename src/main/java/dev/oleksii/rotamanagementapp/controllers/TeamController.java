@@ -3,6 +3,8 @@ package dev.oleksii.rotamanagementapp.controllers;
 import dev.oleksii.rotamanagementapp.domain.dtos.CreateTeamRequest;
 import dev.oleksii.rotamanagementapp.domain.dtos.MemberDto;
 import dev.oleksii.rotamanagementapp.domain.dtos.TeamDto;
+import dev.oleksii.rotamanagementapp.mappers.MemberMapper;
+import dev.oleksii.rotamanagementapp.mappers.TeamMapper;
 import dev.oleksii.rotamanagementapp.security.SecurityUtil;
 import dev.oleksii.rotamanagementapp.services.MembershipService;
 import dev.oleksii.rotamanagementapp.services.TeamService;
@@ -22,13 +24,15 @@ import java.util.UUID;
 public class TeamController {
 
     private final TeamService teamService;
+    private final TeamMapper teamMapper;
+    private final MemberMapper memberMapper;
     private final MembershipService membershipService;
     private final SecurityUtil securityUtil;
 
     @GetMapping
     public ResponseEntity<Set<TeamDto>> getAllTeams(Principal principal) {
         var user = securityUtil.getCurrentUser(principal);
-        return ResponseEntity.ok(teamService.getAllTeams(user));
+        return ResponseEntity.ok(teamMapper.toTeamsDto(teamService.getAllTeams(user)));
     }
 
     @GetMapping("/{teamId}")
@@ -37,7 +41,7 @@ public class TeamController {
             Principal principal) {
 
         membershipService.checkMembership(principal, teamId);
-        return ResponseEntity.ok(teamService.getTeam(teamId));
+        return ResponseEntity.ok(teamMapper.toTeamDTO(teamService.getTeam(teamId)));
     }
 
     @PostMapping
@@ -46,7 +50,7 @@ public class TeamController {
             Principal principal) {
 
         var user = securityUtil.getCurrentUser(principal);
-        return ResponseEntity.status(HttpStatus.CREATED).body(teamService.createTeam(user, request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(teamMapper.toTeamDTO(teamService.createTeam(user, request)));
     }
 
     @PostMapping("/{teamId}/join")
@@ -55,7 +59,7 @@ public class TeamController {
             Principal principal) {
 
         var user = membershipService.checkNoMembership(principal, teamId);
-        return ResponseEntity.ok(teamService.joinTeam(user, teamId));
+        return ResponseEntity.ok(teamMapper.toTeamDTO(teamService.joinTeam(user, teamId)));
     }
 
     @DeleteMapping("/{teamId}/members")
@@ -84,7 +88,7 @@ public class TeamController {
             Principal principal) {
 
         membershipService.checkMembership(principal, teamId);
-        return ResponseEntity.ok(teamService.getAllTeamMembers(teamId));
+        return ResponseEntity.ok(memberMapper.toMembersDto(teamService.getAllTeamMembers(teamId)));
     }
 
 }
