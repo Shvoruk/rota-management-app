@@ -26,7 +26,8 @@ public class ShiftServiceImpl implements ShiftService {
     @Transactional
     @Override
     public ShiftDto createShift(CreateShiftRequest request) {
-        var schedule = scheduleRepository.findById(request.getScheduleId()).orElseThrow(() -> new ScheduleNotFoundException("Schedule not found"));
+        var schedule = scheduleRepository.findById(request.getScheduleId())
+                .orElseThrow(() -> new ScheduleNotFoundException("Schedule not found"));
         var shift = Shift.builder()
                 .name(request.getName())
                 .date(request.getDate())
@@ -40,9 +41,15 @@ public class ShiftServiceImpl implements ShiftService {
     }
 
     @Override
-    public ShiftDto getShift(UUID shiftId) {
-        var shift = shiftRepository.findById(shiftId).orElseThrow(() -> new ShiftNotFoundException("Shift not found"));
-        return shiftMapper.toShiftDTO(shift);
+    public ShiftDto getShiftDto(UUID shiftId) {
+        return shiftMapper.toShiftDTO(shiftRepository.findById(shiftId)
+                .orElseThrow(() -> new ShiftNotFoundException("Shift not found")));
+    }
+
+    @Override
+    public Shift getShift(UUID shiftId) {
+        return shiftRepository.findById(shiftId)
+                .orElseThrow(() -> new ShiftNotFoundException("Shift not found"));
     }
 
     @Override
