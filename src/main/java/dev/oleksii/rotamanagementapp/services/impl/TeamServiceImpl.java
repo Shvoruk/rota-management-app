@@ -12,7 +12,6 @@ import dev.oleksii.rotamanagementapp.domain.repos.TeamRepository;
 import dev.oleksii.rotamanagementapp.exceptions.TeamNotFoundException;
 import dev.oleksii.rotamanagementapp.mappers.TeamMapper;
 import dev.oleksii.rotamanagementapp.mappers.MemberMapper;
-import dev.oleksii.rotamanagementapp.services.MembershipService;
 import dev.oleksii.rotamanagementapp.services.TeamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,6 @@ import java.util.stream.Collectors;
 public class TeamServiceImpl implements TeamService {
 
     private final TeamRepository teamRepository;
-    private final MembershipService membershipService;
     private final TeamMapper teamMapper;
     private final MemberMapper memberMapper;
 
@@ -68,9 +66,6 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public TeamDto joinTeam(User user, UUID teamId) {
         var team = findTeamById(teamId);
-        if(team.getMembers().stream().anyMatch(member -> member.getUser().equals(user))) {
-            throw new IllegalArgumentException("User is already a member of this team");
-        }
         var member = Member.builder()
                 .fullName(user.getFullName())
                 .user(user)
@@ -85,37 +80,24 @@ public class TeamServiceImpl implements TeamService {
 
     @Transactional
     @Override
-    public void leaveTeam(User user, UUID teamId) {
+    public void leaveTeam(Member member, UUID teamId) {
         var team = findTeamById(teamId);
-        var member = team.getMembers().stream()
-                .filter(m -> m.getUser().equals(user))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("User is not a member of this team"));
-
         team.removeMember(member);
         teamRepository.save(team);
     }
 
-    @Transactional(readOnly = true)
     @Override
     public TeamDto getTeam(UUID teamId) {
         return teamMapper.toTeamDTO(findTeamById(teamId));
     }
 
-    @Transactional(readOnly = true)
     @Override
     public Set<TeamDto> getAllTeams(User user) {
-        Set<Member> memberships = membershipService.getAllMemberships(user);
-        Set<Team> teams = memberships.stream()
+        return user.getMemberships().stream()
                 .map(Member::getTeam)
-                .collect(Collectors.toSet());
-
-        return teams.stream()
                 .map(teamMapper::toTeamDTO)
                 .collect(Collectors.toSet());
     }
-
-    @Transactional(readOnly = true)
 
     @Override
     public Set<MemberDto> getAllTeamMembers(UUID teamId) {

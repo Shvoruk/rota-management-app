@@ -1,7 +1,6 @@
 package dev.oleksii.rotamanagementapp.services.impl;
 
 import dev.oleksii.rotamanagementapp.domain.dtos.ScheduleDto;
-import dev.oleksii.rotamanagementapp.domain.entities.*;
 import dev.oleksii.rotamanagementapp.domain.repos.ScheduleRepository;
 import dev.oleksii.rotamanagementapp.exceptions.ScheduleNotFoundException;
 import dev.oleksii.rotamanagementapp.mappers.ScheduleMapper;
@@ -17,11 +16,6 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
     private final ScheduleMapper scheduleMapper;
-
-    @Override
-    public void createSchedule(Team team) {
-
-    }
 
     @Override
     public ScheduleDto getSchedule(UUID teamId) {
