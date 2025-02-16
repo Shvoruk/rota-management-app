@@ -2,7 +2,7 @@ package dev.oleksii.rotamanagementapp.security;
 
 import dev.oleksii.rotamanagementapp.domain.entities.User;
 import dev.oleksii.rotamanagementapp.domain.repos.UserRepository;
-import dev.oleksii.rotamanagementapp.exceptions.UserNotFoundException;
+import dev.oleksii.rotamanagementapp.exceptions.NotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.security.Principal;
@@ -18,6 +18,6 @@ public class SecurityUtil {
 
     public User getCurrentUser(Principal principal) {
         return userRepository.findByEmail(principal.getName())
-                .orElseThrow(() -> new UserNotFoundException("User with email: " + principal.getName() + " not found"));
+                .orElseThrow(() -> new NotFoundException("User with email: " + principal.getName() + " not found"));
     }
 }

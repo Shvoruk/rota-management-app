@@ -5,8 +5,7 @@ import dev.oleksii.rotamanagementapp.domain.dtos.ShiftDto;
 import dev.oleksii.rotamanagementapp.domain.entities.*;
 import dev.oleksii.rotamanagementapp.domain.repos.ScheduleRepository;
 import dev.oleksii.rotamanagementapp.domain.repos.ShiftRepository;
-import dev.oleksii.rotamanagementapp.exceptions.ScheduleNotFoundException;
-import dev.oleksii.rotamanagementapp.exceptions.ShiftNotFoundException;
+import dev.oleksii.rotamanagementapp.exceptions.NotFoundException;
 import dev.oleksii.rotamanagementapp.mappers.ShiftMapper;
 import dev.oleksii.rotamanagementapp.services.ShiftService;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +26,7 @@ public class ShiftServiceImpl implements ShiftService {
     @Override
     public ShiftDto createShift(CreateShiftRequest request) {
         var schedule = scheduleRepository.findById(request.getScheduleId())
-                .orElseThrow(() -> new ScheduleNotFoundException("Schedule not found"));
+                .orElseThrow(() -> new NotFoundException("Schedule not found"));
         var shift = Shift.builder()
                 .name(request.getName())
                 .date(request.getDate())
@@ -43,13 +42,13 @@ public class ShiftServiceImpl implements ShiftService {
     @Override
     public ShiftDto getShiftDto(UUID shiftId) {
         return shiftMapper.toShiftDTO(shiftRepository.findById(shiftId)
-                .orElseThrow(() -> new ShiftNotFoundException("Shift not found")));
+                .orElseThrow(() -> new NotFoundException("Shift not found")));
     }
 
     @Override
     public Shift getShift(UUID shiftId) {
         return shiftRepository.findById(shiftId)
-                .orElseThrow(() -> new ShiftNotFoundException("Shift not found"));
+                .orElseThrow(() -> new NotFoundException("Shift not found"));
     }
 
     @Override

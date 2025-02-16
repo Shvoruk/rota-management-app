@@ -4,7 +4,7 @@ import dev.oleksii.rotamanagementapp.domain.entities.Member;
 import dev.oleksii.rotamanagementapp.domain.entities.User;
 import dev.oleksii.rotamanagementapp.domain.enums.TeamRole;
 import dev.oleksii.rotamanagementapp.domain.repos.MembershipRepository;
-import dev.oleksii.rotamanagementapp.exceptions.MembershipNotFoundException;
+import dev.oleksii.rotamanagementapp.exceptions.NotFoundException;
 import dev.oleksii.rotamanagementapp.security.SecurityUtil;
 import dev.oleksii.rotamanagementapp.services.MembershipService;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ public class MembershipServiceImpl implements MembershipService {
     @Override
     public Member getMembership(UUID memberId) {
         return membershipRepository.findById(memberId).
-                orElseThrow(() -> new MembershipNotFoundException("Membership not found"));
+                orElseThrow(() -> new NotFoundException("Membership not found"));
     }
 
     public void checkMembership(Principal principal, UUID teamId) {

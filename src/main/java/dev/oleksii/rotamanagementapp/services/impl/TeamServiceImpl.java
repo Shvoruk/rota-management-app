@@ -9,7 +9,7 @@ import dev.oleksii.rotamanagementapp.domain.entities.Member;
 import dev.oleksii.rotamanagementapp.domain.entities.User;
 import dev.oleksii.rotamanagementapp.domain.enums.TeamRole;
 import dev.oleksii.rotamanagementapp.domain.repos.TeamRepository;
-import dev.oleksii.rotamanagementapp.exceptions.TeamNotFoundException;
+import dev.oleksii.rotamanagementapp.exceptions.NotFoundException;
 import dev.oleksii.rotamanagementapp.mappers.TeamMapper;
 import dev.oleksii.rotamanagementapp.mappers.MemberMapper;
 import dev.oleksii.rotamanagementapp.services.TeamService;
@@ -31,7 +31,7 @@ public class TeamServiceImpl implements TeamService {
 
     public Team findTeamById(UUID teamId) {
         return teamRepository.findById(teamId)
-                .orElseThrow(() -> new TeamNotFoundException("Team with ID " + teamId + " not found"));
+                .orElseThrow(() -> new NotFoundException("Team with ID " + teamId + " not found"));
     }
 
     @Transactional

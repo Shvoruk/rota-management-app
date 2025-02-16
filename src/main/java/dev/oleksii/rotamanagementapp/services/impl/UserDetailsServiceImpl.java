@@ -4,7 +4,7 @@ import dev.oleksii.rotamanagementapp.domain.dtos.UserDto;
 import dev.oleksii.rotamanagementapp.domain.entities.User;
 import dev.oleksii.rotamanagementapp.domain.enums.Role;
 import dev.oleksii.rotamanagementapp.domain.repos.UserRepository;
-import dev.oleksii.rotamanagementapp.exceptions.EmailAlreadyInUseException;
+import dev.oleksii.rotamanagementapp.exceptions.ConflictException;
 import dev.oleksii.rotamanagementapp.services.UserService;
 import dev.oleksii.rotamanagementapp.services.VerificationService;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +42,7 @@ public class UserDetailsServiceImpl implements UserService {
         if (request.getEmail() != null && !request.getEmail().isEmpty()) {
 
             if (userRepository.existsByEmail(request.getEmail()))
-                throw new EmailAlreadyInUseException("Email is already in use");
+                throw new ConflictException("Email is already in use");
 
             user.setEmail(request.getEmail());
             user.setVerified(false);

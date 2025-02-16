@@ -4,9 +4,9 @@ import dev.oleksii.rotamanagementapp.domain.dtos.AuthenticationRequest;
 import dev.oleksii.rotamanagementapp.domain.dtos.AuthenticationResponse;
 import dev.oleksii.rotamanagementapp.domain.dtos.UserDto;
 import dev.oleksii.rotamanagementapp.domain.entities.User;
-import dev.oleksii.rotamanagementapp.exceptions.EmailAlreadyInUseException;
-import dev.oleksii.rotamanagementapp.exceptions.EmailNotVerifiedException;
-import dev.oleksii.rotamanagementapp.exceptions.UserNotFoundException;
+import dev.oleksii.rotamanagementapp.exceptions.AccessDeniedException;
+import dev.oleksii.rotamanagementapp.exceptions.ConflictException;
+import dev.oleksii.rotamanagementapp.exceptions.NotFoundException;
 import dev.oleksii.rotamanagementapp.security.JwtService;
 import dev.oleksii.rotamanagementapp.domain.repos.UserRepository;
 import dev.oleksii.rotamanagementapp.services.AuthenticationService;
@@ -33,7 +33,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public void register(UserDto request) {
 
         if (repository.existsByEmail(request.getEmail())) {
-            throw new EmailAlreadyInUseException("Email is already in use");
+            throw new ConflictException("Email is already in use");
         }
 
         User user = userService.createUser(request);
@@ -44,10 +44,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         var user = repository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found"));
 
         if (!user.isVerified()) {
-            throw new EmailNotVerifiedException("Please verify your email before logging in");
+            throw new AccessDeniedException("Please verify your email before logging in");
         }
 
         authenticationManager.authenticate(

@@ -5,7 +5,7 @@ import dev.oleksii.rotamanagementapp.domain.dtos.MemberShiftDto;
 import dev.oleksii.rotamanagementapp.domain.entities.MemberShift;
 import dev.oleksii.rotamanagementapp.domain.repos.MemberShiftRepository;
 import dev.oleksii.rotamanagementapp.domain.repos.ShiftRepository;
-import dev.oleksii.rotamanagementapp.exceptions.ShiftNotFoundException;
+import dev.oleksii.rotamanagementapp.exceptions.NotFoundException;
 import dev.oleksii.rotamanagementapp.mappers.MemberShiftMapper;
 import dev.oleksii.rotamanagementapp.services.MemberShiftService;
 import dev.oleksii.rotamanagementapp.services.MembershipService;
@@ -40,7 +40,7 @@ public class MemberShiftServiceImpl implements MemberShiftService {
     }
 
     public void unassignShift(UUID shiftId, UUID memberShiftId){
-         var memberShift = memberShiftRepository.findById(memberShiftId).orElseThrow(() -> new ShiftNotFoundException("Shift not found"));
+         var memberShift = memberShiftRepository.findById(memberShiftId).orElseThrow(() -> new NotFoundException("Shift not found"));
          var shift = memberShift.getShift();
          if(shift.getId().equals(shiftId)){
              shift.removeMemberShift(memberShift);

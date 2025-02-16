@@ -7,8 +7,8 @@ import dev.oleksii.rotamanagementapp.domain.entities.VerificationToken;
 import dev.oleksii.rotamanagementapp.domain.repos.TokenRepository;
 import dev.oleksii.rotamanagementapp.domain.repos.UserRepository;
 import dev.oleksii.rotamanagementapp.exceptions.TokenExpiredException;
-import dev.oleksii.rotamanagementapp.exceptions.UserAlreadyVerifiedException;
-import dev.oleksii.rotamanagementapp.exceptions.UserNotFoundException;
+import dev.oleksii.rotamanagementapp.exceptions.ConflictException;
+import dev.oleksii.rotamanagementapp.exceptions.NotFoundException;
 import dev.oleksii.rotamanagementapp.security.JwtService;
 import dev.oleksii.rotamanagementapp.services.EmailService;
 import dev.oleksii.rotamanagementapp.services.VerificationService;
@@ -58,9 +58,9 @@ public class VerificationServiceImpl implements VerificationService {
     @Override
     @Transactional
     public void resendVerificationToken(String email) {
-        var user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User with email: " + email + " not found"));
+        var user = userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User with email: " + email + " not found"));
 
-        if(user.isVerified()) throw new UserAlreadyVerifiedException("User with email " + user.getEmail() + " is already verified.");
+        if(user.isVerified()) throw new ConflictException("User with email " + user.getEmail() + " is already verified.");
 
         var verificationToken = tokenRepository.findByUser(user).orElseThrow();
         verificationToken.setToken(generateVerificationToken());
