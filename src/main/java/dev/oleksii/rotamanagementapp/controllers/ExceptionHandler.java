@@ -3,6 +3,7 @@ package dev.oleksii.rotamanagementapp.controllers;
 import dev.oleksii.rotamanagementapp.domain.dtos.ErrorResponse;
 import dev.oleksii.rotamanagementapp.exceptions.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -188,5 +189,26 @@ public class ExceptionHandler {
                 .message(ex.getMessage())
                 .build();
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Catches any DataIntegrityViolationException thrown by JPA/Hibernate
+     * when a unique or foreign key constraint is violated.
+     * Returns a 409 Conflict status with the exception’s message.
+     *
+     * @param ex the exception indicating an invalid argument or state
+     * @return a {@link ResponseEntity} with a 409 Conflict status and
+     *         the exception’s message
+     */
+    @org.springframework.web.bind.annotation.ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+
+        log.error("Data integrity violation encountered", ex);
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .status(HttpStatus.CONFLICT.value())
+                .message("This shift was already assigned to that member.")
+                .build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 }
