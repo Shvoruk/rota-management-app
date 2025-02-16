@@ -2,6 +2,7 @@ package dev.oleksii.rotamanagementapp.controllers;
 
 import dev.oleksii.rotamanagementapp.domain.dtos.AssignShiftRequest;
 import dev.oleksii.rotamanagementapp.domain.dtos.MemberShiftDto;
+import dev.oleksii.rotamanagementapp.mappers.MemberShiftMapper;
 import dev.oleksii.rotamanagementapp.services.MemberShiftService;
 import dev.oleksii.rotamanagementapp.services.MembershipService;
 import jakarta.validation.Valid;
@@ -19,6 +20,7 @@ import java.util.UUID;
 public class MemberShiftController {
 
     private final MemberShiftService memberShiftService;
+    private final MemberShiftMapper memberShiftMapper;
     private final MembershipService membershipService;
 
     @PostMapping("/assign")
@@ -29,7 +31,7 @@ public class MemberShiftController {
             Principal principal) {
 
         membershipService.checkManagerMembership(principal, teamId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(memberShiftService.assignShift(shiftId, request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(memberShiftMapper.toMemberShiftDTO(memberShiftService.assignShift(shiftId, request)));
     }
 
     @DeleteMapping("/unassign/{memberShiftId}")
