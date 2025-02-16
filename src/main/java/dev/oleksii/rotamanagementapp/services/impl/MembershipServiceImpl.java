@@ -3,6 +3,8 @@ package dev.oleksii.rotamanagementapp.services.impl;
 import dev.oleksii.rotamanagementapp.domain.entities.Member;
 import dev.oleksii.rotamanagementapp.domain.entities.User;
 import dev.oleksii.rotamanagementapp.domain.enums.TeamRole;
+import dev.oleksii.rotamanagementapp.domain.repos.MembershipRepository;
+import dev.oleksii.rotamanagementapp.exceptions.MembershipNotFoundException;
 import dev.oleksii.rotamanagementapp.security.SecurityUtil;
 import dev.oleksii.rotamanagementapp.services.MembershipService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ import java.util.UUID;
 public class MembershipServiceImpl implements MembershipService {
 
     private final SecurityUtil securityUtil;
+    private final MembershipRepository membershipRepository;
 
     @Override
     public Member getMembership(Principal principal, UUID teamId) {
@@ -25,6 +28,12 @@ public class MembershipServiceImpl implements MembershipService {
                 .filter(m -> m.getTeam().getId().equals(teamId))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("User is not a member of this team"));
+    }
+
+    @Override
+    public Member getMembership(UUID memberId) {
+        return membershipRepository.findById(memberId).
+                orElseThrow(() -> new MembershipNotFoundException("Membership not found"));
     }
 
     public void checkMembership(Principal principal, UUID teamId) {
@@ -51,4 +60,5 @@ public class MembershipServiceImpl implements MembershipService {
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("User is not a manager of this team"));
     }
+
 }

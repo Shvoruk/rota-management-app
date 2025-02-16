@@ -11,4 +11,5 @@ public interface MembershipService {
     User checkNoMembership(Principal principal, UUID teamId);
     void checkManagerMembership(Principal principal, UUID teamId);
     Member getMembership(Principal principal, UUID teamId);
+    Member getMembership(UUID memberId);
 }
