@@ -19,7 +19,10 @@ public class UserController {
     private final SecurityUtil securityUtil;
 
     @PutMapping
-    public ResponseEntity<Void> updateAccount(@Valid @RequestBody UserDto request, Principal principal) {
+    public ResponseEntity<Void> updateAccount(
+            @Valid @RequestBody UserDto request,
+            Principal principal) {
+
         var user = securityUtil.getCurrentUser(principal);
         userService.updateUserDetails(user, request);
         return ResponseEntity.noContent().build();

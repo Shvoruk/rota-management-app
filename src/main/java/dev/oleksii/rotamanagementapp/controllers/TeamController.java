@@ -32,39 +32,57 @@ public class TeamController {
     }
 
     @GetMapping("/{teamId}")
-    public ResponseEntity<TeamDto> getTeam(@PathVariable UUID teamId, Principal principal) {
+    public ResponseEntity<TeamDto> getTeam(
+            @PathVariable UUID teamId,
+            Principal principal) {
+
         membershipService.checkMembership(principal, teamId);
         return ResponseEntity.ok(teamService.getTeam(teamId));
     }
 
     @PostMapping
-    public ResponseEntity<TeamDto> createTeam(@Valid @RequestBody CreateTeamRequest request, Principal principal) {
+    public ResponseEntity<TeamDto> createTeam(
+            @Valid @RequestBody CreateTeamRequest request,
+            Principal principal) {
+
         var user = securityUtil.getCurrentUser(principal);
         return ResponseEntity.status(HttpStatus.CREATED).body(teamService.createTeam(user, request));
     }
 
     @PostMapping("/{teamId}/join")
-    public ResponseEntity<TeamDto> joinTeam(@PathVariable UUID teamId, Principal principal) {
+    public ResponseEntity<TeamDto> joinTeam(
+            @PathVariable UUID teamId,
+            Principal principal) {
+
         var user = membershipService.checkNoMembership(principal, teamId);
         return ResponseEntity.ok(teamService.joinTeam(user, teamId));
     }
 
     @DeleteMapping("/{teamId}/members")
-    public ResponseEntity<Void> leaveTeam(@PathVariable UUID teamId, Principal principal) {
+    public ResponseEntity<Void> leaveTeam(
+            @PathVariable UUID teamId,
+            Principal principal) {
+
         var member = membershipService.getMembership(principal, teamId);
         teamService.leaveTeam(member, teamId);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{teamId}")
-    public ResponseEntity<Void> deleteTeam(@PathVariable UUID teamId, Principal principal) {
+    public ResponseEntity<Void> deleteTeam(
+            @PathVariable UUID teamId,
+            Principal principal) {
+
         membershipService.checkManagerMembership(principal, teamId);
         teamService.deleteTeam(teamId);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{teamId}/members")
-    public ResponseEntity<Set<MemberDto>> getAllTeamMembers(@PathVariable UUID teamId, Principal principal) {
+    public ResponseEntity<Set<MemberDto>> getAllTeamMembers(
+            @PathVariable UUID teamId,
+            Principal principal) {
+
         membershipService.checkMembership(principal, teamId);
         return ResponseEntity.ok(teamService.getAllTeamMembers(teamId));
     }
