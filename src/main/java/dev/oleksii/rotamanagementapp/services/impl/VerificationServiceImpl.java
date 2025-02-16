@@ -46,13 +46,14 @@ public class VerificationServiceImpl implements VerificationService {
                 .build();
     }
 
-    public void createVerificationToken(User user){
+    public VerificationToken createVerificationToken(User user){
             var verificationToken = VerificationToken.builder()
                     .token(generateVerificationToken())
                     .expirationDate(LocalDateTime.now().plusMinutes(verificationConfig.getTokenExpirationMinutes()))
                     .user(user)
                     .build();
         tokenRepository.save(verificationToken);
+        return verificationToken;
     }
 
     @Override
@@ -62,12 +63,7 @@ public class VerificationServiceImpl implements VerificationService {
 
         if(user.isVerified()) throw new ConflictException("User with email " + user.getEmail() + " is already verified.");
 
-        var verificationToken = tokenRepository.findByUser(user).orElseThrow();
-        verificationToken.setToken(generateVerificationToken());
-        verificationToken.setExpirationDate(LocalDateTime.now().plusMinutes(verificationConfig.getTokenExpirationMinutes()));
-
-        tokenRepository.save(verificationToken);
-
+        tokenRepository.save(createVerificationToken(user));
         sendVerificationToken(user);
     }
 
