@@ -1,6 +1,7 @@
 package dev.oleksii.rotamanagementapp.controllers;
 
 import dev.oleksii.rotamanagementapp.domain.dtos.ScheduleDto;
+import dev.oleksii.rotamanagementapp.mappers.ScheduleMapper;
 import dev.oleksii.rotamanagementapp.services.MembershipService;
 import dev.oleksii.rotamanagementapp.services.ScheduleService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.UUID;
 public class ScheduleController {
 
     private final ScheduleService scheduleService;
+    private final ScheduleMapper scheduleMapper;
     private final MembershipService membershipService;
 
     @GetMapping
@@ -27,7 +29,7 @@ public class ScheduleController {
             Principal principal) {
 
         membershipService.checkMembership(principal, teamId);
-        return ResponseEntity.ok(scheduleService.getSchedule(teamId));
+        return ResponseEntity.ok(scheduleMapper.toScheduleDTO(scheduleService.getSchedule(teamId)));
     }
 
 }

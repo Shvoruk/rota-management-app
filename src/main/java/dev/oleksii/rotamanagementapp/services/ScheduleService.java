@@ -1,9 +1,9 @@
 package dev.oleksii.rotamanagementapp.services;
 
-import dev.oleksii.rotamanagementapp.domain.dtos.ScheduleDto;
+import dev.oleksii.rotamanagementapp.domain.entities.Schedule;
 
 import java.util.UUID;
 
 public interface ScheduleService {
-    ScheduleDto getSchedule(UUID teamId);
+    Schedule getSchedule(UUID teamId);
 }
