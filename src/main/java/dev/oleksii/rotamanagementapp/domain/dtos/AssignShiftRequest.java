@@ -15,9 +15,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class AssignShiftRequest {
 
-    @NotNull(message = "Shift Id is required.")
-    private UUID shiftId;
-
     @NotNull(message = "Member Id is required.")
     private UUID memberId;
 
