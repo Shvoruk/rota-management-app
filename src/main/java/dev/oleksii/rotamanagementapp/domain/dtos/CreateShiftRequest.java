@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.UUID;
 
 @Data
 @Builder
@@ -30,8 +29,5 @@ public class CreateShiftRequest {
 
     @NotNull(message = "End time is required.")
     private LocalTime endTime;
-
-    @NotNull(message = "Schedule Id is required.")
-    private UUID scheduleId;
 
 }

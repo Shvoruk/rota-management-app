@@ -1,12 +1,10 @@
 package dev.oleksii.rotamanagementapp.services.impl;
 
 import dev.oleksii.rotamanagementapp.domain.dtos.CreateShiftRequest;
-import dev.oleksii.rotamanagementapp.domain.dtos.ShiftDto;
 import dev.oleksii.rotamanagementapp.domain.entities.*;
-import dev.oleksii.rotamanagementapp.domain.repos.ScheduleRepository;
 import dev.oleksii.rotamanagementapp.domain.repos.ShiftRepository;
 import dev.oleksii.rotamanagementapp.exceptions.NotFoundException;
-import dev.oleksii.rotamanagementapp.mappers.ShiftMapper;
+import dev.oleksii.rotamanagementapp.services.ScheduleService;
 import dev.oleksii.rotamanagementapp.services.ShiftService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,14 +17,22 @@ import java.util.UUID;
 public class ShiftServiceImpl implements ShiftService {
 
     private final ShiftRepository shiftRepository;
-    private final ScheduleRepository scheduleRepository;
-    private final ShiftMapper shiftMapper;
+    private final ScheduleService scheduleService;
+
+    public Shift findShiftById(UUID teamId, UUID shiftId) {
+        var schedule = scheduleService.getSchedule(teamId);
+        var shift = shiftRepository.findById(shiftId)
+                .orElseThrow(() -> new NotFoundException("Shift not found"));
+        if(!shift.getSchedule().equals(schedule)){
+            throw new NotFoundException("Shift not found");
+        }
+        return shift;
+    }
 
     @Transactional
     @Override
-    public ShiftDto createShift(CreateShiftRequest request) {
-        var schedule = scheduleRepository.findById(request.getScheduleId())
-                .orElseThrow(() -> new NotFoundException("Schedule not found"));
+    public Shift createShift(UUID teamId, CreateShiftRequest request) {
+        var schedule = scheduleService.getSchedule(teamId);
         var shift = Shift.builder()
                 .name(request.getName())
                 .date(request.getDate())
@@ -36,13 +42,12 @@ public class ShiftServiceImpl implements ShiftService {
                 .build();
 
         shiftRepository.save(shift);
-        return shiftMapper.toShiftDTO(shift);
+        return shift;
     }
 
     @Override
-    public ShiftDto getShiftDto(UUID shiftId) {
-        return shiftMapper.toShiftDTO(shiftRepository.findById(shiftId)
-                .orElseThrow(() -> new NotFoundException("Shift not found")));
+    public void deleteShift(UUID teamId, UUID shiftId) {
+        shiftRepository.delete(findShiftById(teamId, shiftId));
     }
 
     @Override
@@ -52,8 +57,8 @@ public class ShiftServiceImpl implements ShiftService {
     }
 
     @Override
-    public void deleteShift(UUID shiftId) {
-        shiftRepository.deleteById(shiftId);
+    public Shift getShift(UUID teamId, UUID shiftId) {
+        return findShiftById(teamId, shiftId);
     }
 
 }

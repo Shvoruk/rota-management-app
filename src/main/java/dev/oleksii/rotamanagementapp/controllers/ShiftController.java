@@ -1,6 +1,7 @@
 package dev.oleksii.rotamanagementapp.controllers;
 
 import dev.oleksii.rotamanagementapp.domain.dtos.*;
+import dev.oleksii.rotamanagementapp.mappers.ShiftMapper;
 import dev.oleksii.rotamanagementapp.services.MembershipService;
 import dev.oleksii.rotamanagementapp.services.ShiftService;
 import jakarta.validation.Valid;
@@ -18,6 +19,7 @@ import java.util.UUID;
 public class ShiftController {
 
     private final ShiftService shiftService;
+    private final ShiftMapper shiftMapper;
     private final MembershipService membershipService;
 
     @GetMapping("/{shiftId}")
@@ -27,7 +29,7 @@ public class ShiftController {
             Principal principal) {
 
         membershipService.checkMembership(principal, teamId);
-        return ResponseEntity.ok(shiftService.getShiftDto(shiftId));
+        return ResponseEntity.ok(shiftMapper.toShiftDTO(shiftService.getShift(teamId, shiftId)));
     }
 
     @PostMapping
@@ -37,7 +39,7 @@ public class ShiftController {
             Principal principal) {
 
         membershipService.checkManagerMembership(principal, teamId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(shiftService.createShift(request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(shiftMapper.toShiftDTO(shiftService.createShift(teamId, request)));
     }
 
     @DeleteMapping("/{shiftId}")
@@ -47,8 +49,7 @@ public class ShiftController {
             Principal principal) {
 
         membershipService.checkManagerMembership(principal, teamId);
-        shiftService.deleteShift(shiftId);
+        shiftService.deleteShift(teamId, shiftId);
         return ResponseEntity.noContent().build();
     }
-
 }
