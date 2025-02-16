@@ -34,6 +34,7 @@ public class ShiftServiceImpl implements ShiftService {
                 .endTime(request.getEndTime())
                 .schedule(schedule)
                 .build();
+
         shiftRepository.save(shift);
         return shiftMapper.toShiftDTO(shift);
     }
