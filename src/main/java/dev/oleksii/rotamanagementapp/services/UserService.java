@@ -1,6 +1,7 @@
 package dev.oleksii.rotamanagementapp.services;
 
-import dev.oleksii.rotamanagementapp.domain.dtos.UserDto;
+import dev.oleksii.rotamanagementapp.domain.dtos.CreateUserRequest;
+import dev.oleksii.rotamanagementapp.domain.dtos.UpdateUserRequest;
 import dev.oleksii.rotamanagementapp.domain.entities.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -11,21 +12,21 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 public interface UserService extends UserDetailsService {
 
     /**
-     * Creates a new user in the system based on the provided {@link UserDto}.
+     * Creates a new user in the system based on the provided {@link CreateUserRequest}.
      *
      * @param request the data transfer object containing user details.
      * @return the newly created {@link User} entity.
      */
-    User createUser(UserDto request);
+    User createUser(CreateUserRequest request);
 
     /**
      * Updates the given {@link User} entity with the details provided in the
-     * {@link UserDto}.
+     * {@link UpdateUserRequest}.
      *
      * @param user the existing user entity to be updated.
      * @param request the DTO containing updated user details.
      */
-    void updateUserDetails(User user, UserDto request);
+    void updateUserDetails(User user, UpdateUserRequest request);
 
     /**
      * Deletes the specified {@link User} from the system.
