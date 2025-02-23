@@ -45,8 +45,12 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 // Configure authorization rules for HTTP requests
                 .authorizeHttpRequests(req -> req
-                        // Allow public (unauthenticated) access to endpoints under "/api/v1/auth/**"
-                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        // Permit unauthenticated access to authentication-related endpoints,
+                        // as well as Swagger UI and OpenAPI documentation endpoints.
+                        // - /api/v1/auth/** : Endpoints for login, registration, and other public auth operations.
+                        // - /swagger-ui/**   : Interactive API documentation interface.
+                        // - /v3/api-docs/**  : JSON representation of the OpenAPI spec used by Swagger UI.
+                        .requestMatchers("/api/v1/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         // All other endpoints require authentication
                         .anyRequest().authenticated())
                 // Set session management to stateless, so no session is created or used by Spring Security
