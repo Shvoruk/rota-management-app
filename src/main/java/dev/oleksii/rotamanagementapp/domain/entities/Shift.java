@@ -7,14 +7,21 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Represents a work shift within a schedule.
+ * Contains details about the shift timing and assigned members.
+ */
 @Entity
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+// Excludes collections to avoid recursive calls.
+@EqualsAndHashCode(exclude = {"schedule", "memberShifts"})
 @Table(name = "shifts")
 public class Shift {
 
@@ -34,24 +41,22 @@ public class Shift {
     @Column(nullable = false)
     private LocalTime endTime;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    // The schedule to which this shift belongs.
+    // @JsonBackReference prevents serializing the schedule again within a shift.
     @JsonBackReference
     @JoinColumn(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Schedule schedule;
 
+    // Collection of member shifts (assignments) for this shift.
+    // Cascade and orphanRemoval ensure that any changes to assignments are persisted/removed accordingly.
     @JsonManagedReference
-    @OneToMany(mappedBy = "shift", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<MemberShift> memberShifts;
+    @OneToMany(mappedBy = "shift" ,cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<MemberShift> memberShifts = new HashSet<>();
 
     public void addMemberShift(MemberShift memberShift) {
         memberShifts.add(memberShift);
         memberShift.setShift(this);
     }
-
-    public void removeMemberShift(MemberShift memberShift) {
-        memberShifts.remove(memberShift);
-        memberShift.setShift(null);
-    }
-
 }
 

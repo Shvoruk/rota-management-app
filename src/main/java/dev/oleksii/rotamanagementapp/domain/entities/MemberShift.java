@@ -7,6 +7,10 @@ import lombok.*;
 import java.time.LocalTime;
 import java.util.UUID;
 
+/**
+ * Represents the association between a member and a shift,
+ * including the specific start and end times for the assignment.
+ */
 @Entity
 @Data
 @Builder
@@ -21,21 +25,24 @@ public class MemberShift {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonBackReference
-    @JoinColumn(nullable = false)
-    private Member member;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonBackReference
-    @JoinColumn(nullable = false)
-    private Shift shift;
-
     @Column(nullable = false)
     private LocalTime startTime;
 
     @Column(nullable = false)
     private LocalTime endTime;
+
+    // The member assigned to the shift.
+    // FetchType.LAZY defers loading until needed.
+    @JsonBackReference
+    @JoinColumn(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    private Member member;
+
+    // The shift to which the member is assigned.
+    @JsonBackReference
+    @JoinColumn(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    private Shift shift;
 
 }
 
