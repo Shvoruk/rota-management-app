@@ -1,64 +1,39 @@
 package dev.oleksii.rotamanagementapp.services.impl;
 
 import dev.oleksii.rotamanagementapp.domain.entities.Member;
-import dev.oleksii.rotamanagementapp.domain.entities.User;
-import dev.oleksii.rotamanagementapp.domain.enums.TeamRole;
 import dev.oleksii.rotamanagementapp.domain.repos.MembershipRepository;
 import dev.oleksii.rotamanagementapp.exceptions.NotFoundException;
-import dev.oleksii.rotamanagementapp.security.SecurityUtil;
 import dev.oleksii.rotamanagementapp.services.MembershipService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.security.Principal;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class MembershipServiceImpl implements MembershipService {
 
-    private final SecurityUtil securityUtil;
     private final MembershipRepository membershipRepository;
 
     @Override
-    public Member getMembership(Principal principal, UUID teamId) {
-        var user = securityUtil.getCurrentUser(principal);
-
-        return user.getMemberships().stream()
-                .filter(m -> m.getTeam().getId().equals(teamId))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("User is not a member of this team"));
+    public Member getMembershipById(UUID memberId) {
+        return membershipRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundException("Membership with ID " + memberId + " not found."));
     }
 
     @Override
-    public Member getMembership(UUID memberId) {
-        return membershipRepository.findById(memberId).
-                orElseThrow(() -> new NotFoundException("Membership not found"));
+    public Member getMembershipByUserIdAndTeamId(UUID userId, UUID teamId) {
+        return membershipRepository.findByUserIdAndTeamId(userId, teamId)
+                .orElseThrow(() -> new NotFoundException("User is not a member of team with ID " + teamId));
     }
 
-    public void checkMembership(Principal principal, UUID teamId) {
-        var user = securityUtil.getCurrentUser(principal);
-        user.getMemberships().stream()
-                .filter(m -> m.getTeam().getId().equals(teamId))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("User is not a member of this team"));
+    public Set<Member> getAllMembershipsByTeamId(UUID teamId) {
+        return membershipRepository.findAllByTeamId(teamId);
     }
 
     @Override
-    public User checkNoMembership(Principal principal, UUID teamId) {
-        var user = securityUtil.getCurrentUser(principal);
-        if(user.getMemberships().stream().anyMatch(m -> m.getTeam().getId().equals(teamId))){
-            throw new IllegalArgumentException("User is already a member of this team");
-        }
-        return user;
+    public void deleteMembershipByUserIdAndTeamId(UUID userId, UUID teamId) {
+        membershipRepository.deleteByUserIdAndTeamId(userId, teamId);
     }
-
-    public void checkManagerMembership(Principal principal, UUID teamId) {
-        var user = securityUtil.getCurrentUser(principal);
-        user.getMemberships().stream()
-                .filter(m -> m.getRole() == TeamRole.MANAGER && m.getTeam().getId().equals(teamId))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("User is not a manager of this team"));
-    }
-
 }

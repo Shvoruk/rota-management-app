@@ -1,15 +1,13 @@
 package dev.oleksii.rotamanagementapp.services;
 
 import dev.oleksii.rotamanagementapp.domain.entities.Member;
-import dev.oleksii.rotamanagementapp.domain.entities.User;
 
-import java.security.Principal;
+import java.util.Set;
 import java.util.UUID;
 
 public interface MembershipService {
-    void checkMembership(Principal principal, UUID teamId);
-    User checkNoMembership(Principal principal, UUID teamId);
-    void checkManagerMembership(Principal principal, UUID teamId);
-    Member getMembership(Principal principal, UUID teamId);
-    Member getMembership(UUID memberId);
+    Member getMembershipById(UUID membershipId);
+    Member getMembershipByUserIdAndTeamId(UUID userId, UUID teamId);
+    Set<Member> getAllMembershipsByTeamId(UUID teamId);
+    void deleteMembershipByUserIdAndTeamId(UUID userId, UUID teamId);
 }
