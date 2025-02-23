@@ -14,6 +14,6 @@ public interface MemberMapper {
     MemberDto toMemberDTO(Member member);
 
     @Mapping(source = "id", target = "memberId")
-    Set<MemberDto> toMembersDto(Set<Member> members);
+    Set<MemberDto> toMembersDTO(Set<Member> members);
 
 }
