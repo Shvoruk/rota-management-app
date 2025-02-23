@@ -1,4 +1,4 @@
-package dev.oleksii.rotamanagementapp;
+package dev.oleksii.rotamanagementapp.repos;
 
 import dev.oleksii.rotamanagementapp.domain.entities.User;
 import dev.oleksii.rotamanagementapp.domain.entities.VerificationToken;
