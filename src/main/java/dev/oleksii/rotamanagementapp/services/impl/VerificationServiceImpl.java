@@ -4,7 +4,6 @@ import dev.oleksii.rotamanagementapp.configuration.VerificationConfig;
 import dev.oleksii.rotamanagementapp.domain.dtos.AuthenticationResponse;
 import dev.oleksii.rotamanagementapp.domain.entities.User;
 import dev.oleksii.rotamanagementapp.domain.entities.VerificationToken;
-import dev.oleksii.rotamanagementapp.domain.repos.TokenRepository;
 import dev.oleksii.rotamanagementapp.domain.repos.UserRepository;
 import dev.oleksii.rotamanagementapp.exceptions.TokenExpiredException;
 import dev.oleksii.rotamanagementapp.exceptions.ConflictException;
@@ -20,8 +19,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
- * Service implementation for user email verification flow.
- * Handles verification token creation, email sending, and token validation.
+ * Implementation of the {@link VerificationService} interface.
  */
 @Service
 @RequiredArgsConstructor
@@ -31,127 +29,121 @@ public class VerificationServiceImpl implements VerificationService {
     private final JwtService jwtService;
     private final VerificationConfig verificationConfig;
     private final EmailService emailService;
-    private final TokenRepository tokenRepository;
 
     /**
-     * Validates the provided verification token.
-     * - Checks if the token exists
-     * - Checks if the token has expired
-     * - Verifies the user (sets user.verified = true)
-     * - Deletes the token once used
-     * - Generates and returns a new JWT for the user
+     * Verifies the user's email using the provided token by:
+     * <ul>
+     *   <li>Retrieving the user by the embedded verification token.</li>
+     *   <li>Checking if the token is expired; if so, throws a {@link TokenExpiredException}.</li>
+     *   <li>Marking the user as verified and clearing the embedded verification token.</li>
+     *   <li>Saving the updated user entity.</li>
+     *   <li>Generating a JWT for the now verified user and returning it within an {@link AuthenticationResponse}.</li>
+     * </ul>
      *
-     * @param token The verification token to validate
-     * @return AuthenticationResponse containing the new JWT
+     * @param token The verification token provided by the user.
+     * @return An {@link AuthenticationResponse} containing a JWT for the verified user.
+     * @throws NotFoundException if no user is found with the provided token.
+     * @throws TokenExpiredException if the verification token has expired.
      */
+
     @Override
     @Transactional
     public AuthenticationResponse verify(String token) {
-        // Look up the token in the database or throw if not found
-        var verificationToken = tokenRepository.findByToken(token)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid or expired verification token."));
+        var user = userRepository.findByVerificationToken(token)
+                .orElseThrow(() -> new NotFoundException("User not found."));
 
-        // Check if the token has expired
-        if (verificationToken.getExpirationDate() != null
-                && verificationToken.getExpirationDate().isBefore(LocalDateTime.now())) {
+        if (user.getVerificationToken().getExpirationDate().isBefore(LocalDateTime.now())) {
             throw new TokenExpiredException("Expired verification token.");
         }
 
-        // Mark the user as verified and save
-        var user = verificationToken.getUser();
+        // Mark user as verified and clear the embedded token.
         user.setVerified(true);
+        user.setVerificationToken(null);
         userRepository.save(user);
 
-        // Since the token is only supposed to be used once, remove it from the DB
-        tokenRepository.delete(verificationToken);
-
-        // Generate a fresh JWT for the now-verified user
-        var jwtToken = jwtService.generateToken(user);
-
-        // Return the new JWT in an authentication response
+        String jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
     }
 
     /**
-     * Creates a new VerificationToken object for a given user.
-     * - Generates a random token string
-     * - Calculates the expiration date/time
-     * - Persists the token to the database
+     * Creates (or replaces) the embedded verification token for the specified user by:
+     * <ul>
+     *   <li>Generating a new unique token using a random UUID.</li>
+     *   <li>Setting the token's expiration date based on the configured duration.</li>
+     *   <li>Attaching the newly created token to the user and saving the updated user entity.</li>
+     *   <li>Returning the created {@link VerificationToken}.</li>
+     * </ul>
      *
-     * @param user The user who needs verification
-     * @return The newly created VerificationToken
+     * @param user The user for whom the verification token is being created.
+     * @return The newly created {@link VerificationToken}.
      */
     @Override
     @Transactional
     public VerificationToken createVerificationToken(User user) {
-        // Build a new VerificationToken instance
         var verificationToken = VerificationToken.builder()
-                .token(generateVerificationToken())  // random token string
-                .expirationDate(LocalDateTime.now().plusMinutes(verificationConfig.getTokenExpirationMinutes())) // set expiration
-                .user(user)
+                .token(generateVerificationToken())
+                .expirationDate(LocalDateTime.now().plusMinutes(verificationConfig.getTokenExpirationMinutes()))
                 .build();
 
-        // Save the token in the repository
-        tokenRepository.save(verificationToken);
+        user.setVerificationToken(verificationToken);
+        userRepository.save(user);
         return verificationToken;
     }
 
     /**
-     * Resends a verification token email if the user is not yet verified.
-     * - Looks up user by email
-     * - Throws if user is already verified
-     * - Creates a new token
-     * - Sends the token to the user by email
+     * Resends the verification token email by:
+     * <ul>
+     *   <li>Retrieving the user by their email address.</li>
+     *   <li>Throwing a {@link ConflictException} if the user is already verified.</li>
+     *   <li>Creating a new verification token for the user.</li>
+     *   <li>Sending the verification token via email to the user.</li>
+     * </ul>
      *
-     * @param email The user's email
+     * @param email The email address of the user for whom the verification token should be resent.
+     * @throws NotFoundException if no user is found with the provided email.
+     * @throws ConflictException if the user is already verified.
      */
     @Override
     @Transactional
     public void resendVerificationToken(String email) {
-        // Fetch user by email or throw if not found
-        var user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("User with email: " + email + " not found."));
-
-        // If the user is already verified, no need to re-send a token
         if (user.isVerified()) {
             throw new ConflictException("User with email " + email + " is already verified.");
         }
-
-        // Create a fresh token for this user
-        tokenRepository.save(createVerificationToken(user));
-
-        // Send the token to the user by email
+        createVerificationToken(user);
         sendVerificationToken(user);
     }
 
     /**
-     * Sends an existing verification token to the user via email.
-     * - Retrieves the user's token
-     * - Builds the verification URL
-     * - Sends an email using the EmailService
+     * Sends the verification token to the specified user's email by:
+     * <ul>
+     *   <li>Retrieving the user's embedded verification token.</li>
+     *   <li>Throwing a {@link NotFoundException} if no token is found.</li>
+     *   <li>Constructing a verification link using the token and the configured base URL.</li>
+     *   <li>Sending the verification email using the {@link EmailService}.</li>
+     * </ul>
      *
-     * @param user The user to receive the token
+     * @param user The user to whom the verification token email should be sent.
+     * @throws NotFoundException if the user does not have a verification token.
      */
     @Override
     @Transactional
     public void sendVerificationToken(User user) {
-        // Retrieve the verification token for the user
-        var verificationToken = tokenRepository.findByUser(user)
-                .orElseThrow();
-
-        // Construct the full verification link using config + token
+        var verificationToken = user.getVerificationToken();
+        if (verificationToken == null) {
+            throw new NotFoundException("No verification token found for user.");
+        }
         String link = verificationConfig.getVerificationLink() + verificationToken.getToken();
-
-        // Send the verification email
-        emailService.sendEmail(user.getEmail(), "Verify your email", link);
+        emailService.sendVerificationEmail(user.getEmail(), "Verify your email", "verify-email", link);
     }
 
     /**
-     * Generates a random verification token string (UUID).
+     * Generates a unique verification token string
      *
-     * @return Random token string
+     * @return A unique verification token as a {@link String}.
      */
     @Override
     public String generateVerificationToken() {
