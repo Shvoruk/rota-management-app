@@ -8,26 +8,17 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Entity
+/**
+ * Embeddable entity for storing verification token details.
+ * Used to verify a user's email during registration.
+ */
+@Embeddable
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class VerificationToken {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false, unique = true)
     private String token;
-
-    @Column(nullable = false)
     private LocalDateTime expirationDate;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
-    private User user;
-
 }
 
