@@ -8,4 +8,5 @@ import java.util.UUID;
 
 @Repository
 public interface MemberShiftRepository extends JpaRepository<MemberShift, UUID> {
+    void deleteByShiftIdAndId(UUID shiftId, UUID id);
 }
