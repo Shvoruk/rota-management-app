@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - develop
-      - Shvoruk-workflows
 
 jobs:
   test-and-build:
@@ -24,6 +23,11 @@ jobs:
 
       - name: Build & Run Unit Tests
         run: mvn clean verify -e -X
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Docker Build & Run
         run: |
