@@ -14,6 +14,6 @@ public interface TeamMapper {
     TeamDto toTeamDTO(Team team);
 
     @Mapping(source = "id", target = "teamId")
-    Set<TeamDto> toTeamsDto(Set<Team> teams);
+    Set<TeamDto> toTeamsDTO(Set<Team> teams);
 
 }

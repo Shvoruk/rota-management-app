@@ -26,4 +26,5 @@ public class AuthenticationRequest {
             message = "Password must contain at least one digit, one uppercase letter, one lowercase letter, one special character, and no whitespace."
     )
     private String password;
+
 }
