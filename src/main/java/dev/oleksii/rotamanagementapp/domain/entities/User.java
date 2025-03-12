@@ -57,7 +57,7 @@ public class User implements UserDetails {
     // Cascade type REMOVE ensures that deleting a user removes associated memberships.
     // FetchType.LAZY defers loading until needed.
     @JsonIgnore
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.LAZY)
     private Set<Member> memberships = new HashSet<>();
 
     // Embedded verification token for account confirmation.
