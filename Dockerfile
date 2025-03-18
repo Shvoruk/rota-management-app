@@ -1,7 +1,7 @@
 # Dockerfile
 
 # 1. Build Stage
-FROM eclipse-temurin:21-alpine AS builder
+FROM maven:3.9.9-amazoncorretto-21-alpine AS builder
 
 # Install Maven
 RUN apk add --no-cache maven
@@ -19,7 +19,7 @@ COPY src/ ./src/
 RUN mvn clean package -DskipTests
 
 # 2. Runtime Stage
-FROM eclipse-temurin:21-jdk-alpine
+FROM amazoncorretto:21-alpine-jdk
 WORKDIR /app
 
 # Copy the JAR file from the builder stage
