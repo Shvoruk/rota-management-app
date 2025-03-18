@@ -1,4 +1,4 @@
-package dev.oleksii.rotamanagementapp.repos;
+package dev.oleksii.rotamanagementapp.reposIT;
 
 import dev.oleksii.rotamanagementapp.domain.entities.User;
 import dev.oleksii.rotamanagementapp.domain.entities.VerificationToken;
@@ -8,16 +8,22 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @DataJpaTest
-public class UserRepositoryTest {
+class UserRepositoryIT {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    TestEntityManager entityManager;
 
     private User user;
     private String token;
@@ -25,6 +31,8 @@ public class UserRepositoryTest {
     @BeforeEach
     void setUp() {
         token = UUID.randomUUID().toString();
+        VerificationToken verificationToken = new VerificationToken(token, LocalDateTime.now());
+
         user = User.builder()
                 .fullName("Test")
                 .password("password")
@@ -32,33 +40,38 @@ public class UserRepositoryTest {
                 .role(Role.USER)
                 .createdAt(LocalDateTime.now())
                 .verified(false)
-                .verificationToken(new VerificationToken(token, LocalDateTime.now()))
+                .verificationToken(verificationToken)
                 .build();
     }
 
     @Test
     void testFindByVerificationToken() {
-        userRepository.save(user);
+        user = entityManager.persistAndFlush(user);
+
         Optional<User> userOptional = userRepository.findByVerificationToken(token);
 
-        assert userOptional.isPresent();
-        assert userOptional.get().getId().equals(user.getId());
-        assert userOptional.get().getEmail().equals(user.getEmail());
+        assertThat(userOptional).isPresent();
+        assertThat(userOptional.get().getId()).isEqualTo(user.getId());
+        assertThat(userOptional.get().getEmail()).isEqualTo(user.getEmail());
     }
 
     @Test
     void testFindByEmail() {
-        userRepository.save(user);
+        user = entityManager.persistAndFlush(user);
+
         Optional<User> userOptional = userRepository.findByEmail(user.getEmail());
-        assert userOptional.isPresent();
-        assert userOptional.get().getId().equals(user.getId());
-        assert userOptional.get().getEmail().equals("test@email.com");
+
+        assertThat(userOptional).isPresent();
+        assertThat(userOptional.get().getId()).isEqualTo(user.getId());
+        assertThat(userOptional.get().getEmail()).isEqualTo("test@email.com");
     }
 
     @Test
     void testExistsByEmail() {
-        userRepository.save(user);
+        user = entityManager.persistAndFlush(user);
+
         boolean exists = userRepository.existsByEmail(user.getEmail());
-        assert exists;
+
+        assertThat(exists).isTrue();
     }
 }
