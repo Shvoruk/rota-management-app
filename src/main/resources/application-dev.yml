@@ -1,0 +1,50 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://db:5432/database
+    username: user
+    password: password
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USER}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+logging:
+  level:
+    org:
+      springframework:
+        mail: DEBUG
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
+
+
+jwt:
+  expiration-milliseconds: 86400000  # 24 hours
+  secret: ${JWT_SECRET}
+
+verification:
+  token:
+    token-expiration-minutes: 30
+    verification-link: ${VERIFICATION_LINK}
