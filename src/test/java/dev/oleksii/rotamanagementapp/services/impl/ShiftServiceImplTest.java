@@ -57,7 +57,7 @@ class ShiftServiceImplTest {
     @Test
     void saveShift() {
         Shift shift = new Shift();
-        shiftRepository.save(shift);
+        shiftService.saveShift(shift);
         verify(shiftRepository).save(shift);
     }
 

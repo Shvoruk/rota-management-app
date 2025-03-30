@@ -56,7 +56,7 @@ class TeamServiceImplTest {
     @Test
     void saveTeam() {
         Team team = new Team();
-        teamRepository.save(team);
+        teamService.saveTeam(team);
         verify(teamRepository).save(team);
     }
 
