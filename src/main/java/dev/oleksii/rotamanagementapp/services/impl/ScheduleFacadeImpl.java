@@ -45,6 +45,7 @@ public class ScheduleFacadeImpl implements ScheduleFacade {
     }
 
     @Override
+    @Transactional
     public ShiftDto createShift(UUID teamId, CreateShiftRequest request) {
         var schedule = scheduleService.getScheduleByTeamId(teamId);
         Shift shift = Shift.builder()
@@ -60,12 +61,14 @@ public class ScheduleFacadeImpl implements ScheduleFacade {
     }
 
     @Override
+    @Transactional
     public void deleteShift(UUID teamId, UUID shiftId) {
         var shift = findShift(teamId, shiftId);
         shiftService.deleteShiftById(shift.getId());
     }
 
     @Override
+    @Transactional
     public MemberShiftDto assignShift(UUID teamId, UUID shiftId, AssignShiftRequest request) {
         var shift = findShift(teamId, shiftId);
 

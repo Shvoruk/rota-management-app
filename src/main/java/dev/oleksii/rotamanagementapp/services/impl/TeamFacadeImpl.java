@@ -81,6 +81,7 @@ public class TeamFacadeImpl implements TeamFacade {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public TeamDto createTeam(User user, String name) {
         // Build a new team entity with the specified name.
         var team = Team.builder().name(name).build();
@@ -108,6 +109,7 @@ public class TeamFacadeImpl implements TeamFacade {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public void deleteTeam(UUID teamId) {
         teamService.deleteTeamById(teamId);
     }
@@ -116,6 +118,7 @@ public class TeamFacadeImpl implements TeamFacade {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public TeamDto joinTeam(User user, UUID teamId) {
         // Retrieve the team entity.
         var team = teamService.getTeamById(teamId);
